@@ -27,7 +27,7 @@
    
    6)Алиса используя полученный `secretHash` создает следующую транзакцию и транслирует её в блокчейн биткоина:
    
-   ![Funding_tx](https://github.com/swaponline/tether.research/new/master/images/1.png)
+   ![Funding_tx](https://github.com/swaponline/tether.research/blob/master/images/1.png)
    
    назовем такую транзакцию `funding_tx` по факту это почти обычная биткоиновая htlc-транзакция которая используется в atomic swap
    с той лишь разницей, что в поле amount 546 сатошей - это минимальное количество биткоинов которое может быть на выходе транзакции,
@@ -35,7 +35,7 @@
    
    7)Алиса создает транзакцию по следующей схеме:
    
-   ![Redeem_tx](https://github.com/swaponline/tether.research/new/master/images/2.png)
+   ![Redeem_tx](https://github.com/swaponline/tether.research/blob/master/images/2.png)
    
    назовем такую транзакцию `redeem_tx`. Алиса создает такую транзакцию с двумя входами: первый - это вход ссылающиеся на выход `funding_tx`
    который содержит htlc скрипт этот вход Алиса не подписывает, то есть поле SigScript остается вообще пустым. второй вход - это вход 
