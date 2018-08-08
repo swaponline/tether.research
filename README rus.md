@@ -96,5 +96,5 @@
   ![redeem_tx_without_Bob's_sign](https://github.com/swaponline/tether.research/blob/master/images/Redeem_tx1.png)<br />
   отправляет её Бобу на подпись(по канал связи между Алисой и Бобом) <br />
   5.Боб подписывает предыдущую транзакцию и предоставляет `secret`, отправляет в блокчейн биткоина уже следующую транзакцию: <br />
-  ![redeem_tx](https://github.com/swaponline/tether.research/blob/master/images/Redeem_tx2.png)<br />
+  ![redeem_tx](https://github.com/swaponline/tether.research/blob/master/images/Redeem_tx2.png) <br />
   
