@@ -86,6 +86,12 @@
   Адрес Алисы - `mgco3HEFvZ1iTaovhCEz1ZjF2wNR6Xu6oz`. <br />
   Адрес Боба - `mk3dDgfZPTn3aiNUFZAd3wWcDgV6S7gjAA` <br />
   
+  Баланс OMNI токенов Алисы: <br />
+  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/balanceA1.png)
+    
+  Баланс OMNI токенов Бобаи: <br />
+  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/balanceB1.png)
+  
   Алиса меняет 1 OMNI на какое-либо число какой-либо криптовалюты Боба. Для проведение обмена необходимо сделать следующие шаги: <br />
   1. Боб сгенерировал секретное значение -`0xa8de8a6fc5592d13752c3623754bb9fa1124392ffdb090e409ce56726cda42ea` <br />
   
@@ -94,7 +100,7 @@
   3. Алиса создала следующую транзакию и отправила ее в блокчейн (funding_tx): <br />
   ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/funding_tx.png) <br />
   Для наглядности выделем значение `secretHash` в explorer'е: <br />
-  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/funding_txSECRET.png)
+  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/fundung_txSECRET.png)
   (Боб делает в блокчейне ***B*** то же самое, но нас эти транзакции сейчас не особо интересует, да и для разных блокчейнов они могут различаться) <br />
   
   4. Алиса создает следующую транзакцию(redeem_tx), подписывая свой вход SIGHASH_ALL алгоритмом:
@@ -103,6 +109,16 @@
   
   5.Боб подписывает предыдущую транзакцию и предоставляет `secret`, отправляет в блокчейн биткоина уже следующую транзакцию: <br />
   ![redeem_tx](https://github.com/swaponline/tether.research/blob/master/images/Redeem_tx2.png) <br />
-  Для наглядности выделем значение `secretHash` в explorer'е: <br />
-  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/Redeem2SECRET.png)
+  Для наглядности выделем значение `secret` в explorer'е: <br />
+  ![redeem_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/Redeem2SECRET.png)
+  
+  Таким образом, ввиду присуствия в транзакции, которую Боб последней транслировал в сеть выхода с payload'ом - это транзакция является  следующей Omni транзакцией: <br />
+    ![omni_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/OMNI_TX.png)
+    
+   Баланс OMNI токенов Алисы после проведения этих транзакции: <br />
+   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/balanceA2.png)
+    
+   Баланс OMNI токенов Боба после проведения этих транзакции: <br />
+   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/balanceB2.png)
+
   
