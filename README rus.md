@@ -116,9 +116,9 @@
     ![omni_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/OMNI_TX.png)
     
    Баланс OMNI токенов Алисы после проведения этих транзакции: <br />
-   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/balanceA2.png)
+   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/BalanceA2.png)
     
    Баланс OMNI токенов Боба после проведения этих транзакции: <br />
-   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/balanceB2.png)
+   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/BalanceB2.png)
 
   
