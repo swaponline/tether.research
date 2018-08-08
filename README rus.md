@@ -88,13 +88,21 @@
   
   Алиса меняет 1 OMNI на какое-либо число какой-либо криптовалюты Боба. Для проведение обмена необходимо сделать следующие шаги: <br />
   1. Боб сгенерировал секретное значение -`0xa8de8a6fc5592d13752c3623754bb9fa1124392ffdb090e409ce56726cda42ea` <br />
+  
   2. Хэш секретного значения `secretHash`=`0xf1883766dca084c36332d536e88e3966c2660251`, который Боб отправил Алисе. <br />
+  
   3. Алиса создала следующую транзакию и отправила ее в блокчейн (funding_tx): <br />
   ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/funding_tx.png) <br />
+  Для наглядности выделем значение `secretHash` в explorer'е: <br />
+  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/funding_txSECRET.png)
   (Боб делает в блокчейне ***B*** то же самое, но нас эти транзакции сейчас не особо интересует, да и для разных блокчейнов они могут различаться) <br />
+  
   4. Алиса создает следующую транзакцию(redeem_tx), подписывая свой вход SIGHASH_ALL алгоритмом:
   ![redeem_tx_without_Bob's_sign](https://github.com/swaponline/tether.research/blob/master/images/Redeem_tx1.png)<br />
-  отправляет её Бобу на подпись(по канал связи между Алисой и Бобом) <br />
+  отправляет её Бобу на подпись(по канал связи между Алисой и Бобом), заметим, что на одном из входов отсуствует SigScript. <br />
+  
   5.Боб подписывает предыдущую транзакцию и предоставляет `secret`, отправляет в блокчейн биткоина уже следующую транзакцию: <br />
   ![redeem_tx](https://github.com/swaponline/tether.research/blob/master/images/Redeem_tx2.png) <br />
+  Для наглядности выделем значение `secretHash` в explorer'е: <br />
+  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/Redeem2SECRET.png)
   
