@@ -8,6 +8,7 @@ transaction createAtomicSwapTetherFundingTransaction(const ec_private& Alice_pri
 
     funding_tx.set_version(1u);
 
+
     //входы транзакции(в идеале лучше было бы, еслиб программа сама находила и строила входы, как например с помощью функции getUTXO, суть ее в том, чтобы обраться к серверу(в данном случае libbitcoin серверу) и отправить запрос на получение данных из блокчейна, из которые уже можно бы было получить UTXO для конкретного адреса,но сервер возвращает пустое множество UTXO, для любого адреса. долгое время не смогя разобраться с этой проблемой, было решено пока возложить на пользователя задачу найти и вписать свой UTXO)
     //выходы можно самостоятельно посмотреть на сайте
     //https://live.blockcypher.com/btc-testnet/tx/62408b1b14ce9eea82b73b543cfb0bdfc4ec118b9d50c07e6c6d75ba3c6a7b59/
@@ -27,6 +28,7 @@ transaction createAtomicSwapTetherFundingTransaction(const ec_private& Alice_pri
 
     output_point UTXO(PrevTxHash, PrevTxIndex);
 
+    //сдача пользователю, то есть открывающая транзакция (opening_tx) имеет 2 выхода - первый, на счет с мультподписью размер отправляеных на него биткоинов равен ширине канала, второй - сдача пользователю, остаток средств которые он хочет вернуть на свой адрес, он наберет их сам, учитывая какую сумму он хочет потратить на fees
     std::string OddMoney_btc;
     uint64_t OddMoney_satoshi;
     std::cout<<"\n write odd money (in BTC), for creating p2pkh output on your address. Dont forgot about transaction's fees:\n";
@@ -45,7 +47,8 @@ transaction createAtomicSwapTetherFundingTransaction(const ec_private& Alice_pri
     //второй - сдача самому себе, выход со скриптом вида p2pkh
 
     operation::list SwapScript;
-    SwapScript.push_back( operation(opcode::ripemd160) );
+
+/*    SwapScript.push_back( operation(opcode::ripemd160) );
     SwapScript.push_back( operation(swap_secret_hash) );
     SwapScript.push_back( operation(opcode::equalverify) );
 
@@ -58,15 +61,41 @@ transaction createAtomicSwapTetherFundingTransaction(const ec_private& Alice_pri
     SwapScript.push_back( operation(opcode::checksig) );
 
     SwapScript.push_back( operation(opcode::else_) );
-    SwapScript.push_back( operation(uint32_to_data_chunk(locktime)) );
+    SwapScript.push_back( operation(uint32_to_data_chunk_inverse(locktime)) );
     SwapScript.push_back( operation(opcode::checklocktimeverify) );
     SwapScript.push_back( operation(opcode::drop) );
     SwapScript.push_back( operation(to_chunk(Alice_private.to_public().point() )) );
     SwapScript.push_back( operation(opcode::checksig) );
 
     SwapScript.push_back( operation(opcode::endif) );
+*/
 
-    output Output0(SATOSHI_FOR_OMNI_OUTPUT,SwapScript); //вызываем конструктор класса output, в который передаем 1 - количество коинов, 2 - скрипт
+    SwapScript.push_back( operation(opcode::ripemd160) );
+    SwapScript.push_back( operation(swap_secret_hash) );
+    SwapScript.push_back( operation(opcode::equal) );
+
+    SwapScript.push_back( operation(opcode::if_) );
+
+    SwapScript.push_back( operation(to_chunk(Bob_pubkey)) );
+
+    SwapScript.push_back( operation(opcode::else_) );
+    SwapScript.push_back( operation(uint32_to_data_chunk_inverse(locktime)) );
+    SwapScript.push_back( operation(opcode::checklocktimeverify) );
+    SwapScript.push_back( operation(opcode::drop) );
+    SwapScript.push_back( operation(to_chunk(Alice_private.to_public().point() )) );
+
+    SwapScript.push_back( operation(opcode::endif) );
+    SwapScript.push_back( operation(opcode::checksig) );
+
+    script redeem_script(SwapScript);
+
+    //составим p2sh выход, с хэшем скрипта redeemScript
+    //OP_HASH160 <redeemScriptHash> OP_EQUAL
+    //std::cout<< encode_base16(redeem_script.to_data(false) )<<std::endl;
+    short_hash redeemScriptHash=bitcoin_short_hash(redeem_script.to_data(false));
+    script p2sh_swapScript = script::to_pay_script_hash_pattern(redeemScriptHash);
+
+    output Output0(MIN_AMOUNT,p2sh_swapScript); //вызываем конструктор класса output, в который передаем 1 - количество коинов, 2 - скрипт
 
     operation::list p2pkhScript=script::to_pay_key_hash_pattern(Alice_address.hash()); //скрипт для возвращает сдачу себе
     output Output1(OddMoney_satoshi, p2pkhScript); //создаем второй выход
