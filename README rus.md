@@ -128,10 +128,12 @@
   Адрес Боба - `1341545XP8GdCiL96osVr3NefXpHbjzoCs` <br />
   
   Баланс TetherUS токенов Алисы: <br />
-  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/balanceA1.png)
+  
+  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/balanceA1.png)
     
   Баланс TetherUS токенов Боба: <br />
-  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/balanceB1.png)
+  
+  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/balanceB1.png)
   
   Алиса меняет 1 TetherUS на 0.001 биткоинов Боба. Для проведение обмена необходимо сделать следующие шаги: <br />
   1. Боб сгенерировал секретное значение -`0x832f296f8f2cff3fe553dee413d8fc84def9102be547bd147c02c36b704ebafb` <br />
@@ -139,32 +141,41 @@
   2. Хэш секретного значения `secretHash`=`0xbd52a5a7d6d5b8367ddfa8417c271c5639f85322`.<br />
   
   3. Боб создал следующую транзакию и отправила ее в блокчейн (funding_tx): <br />
-  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/funding_txB.png) <br />
+  
+  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/funding_txB.png) <br />
   
   4. Боб передает секретное значение Алисе.
   
   5. Алиса создала следующую транзакию и отправила ее в блокчейн (funding_tx): <br />
-  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/funding_txA.png) <br />
+  
+  ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/funding_txA.png) <br />
   
   6. Алиса создает следующую транзакцию(redeem_tx), подписывая свой вход SIGHASH_ALL алгоритмом:
-  ![redeem_tx_without_Bob's_sign](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/redeem_txA.png)<br />
+  
+  ![redeem_tx_without_Bob's_sign](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/redeem_txA.png)<br />
   отправляет её Бобу на подпись(по канал связи между Алисой и Бобом), заметим, что на одном из входов отсуствует SigScript. <br />
   
   7.Боб подписывает предыдущую транзакцию и предоставляет `secret`, отправляет в блокчейн биткоина уже следующую транзакцию: <br />
-  ![redeem_tx](https://github.com/swaponline/tether.research/blob/master/images//exampleMainnet/redeem_txAB.png) <br />
+  
+  ![redeem_tx](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/redeem_txAB.png) <br />
   
   Таким образом, ввиду присуствия в транзакции, которую Боб последней транслировал в сеть выхода с payload'ом - это транзакция является  следующей Omni транзакцией: <br />
-    ![omni_tx_Example](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/omni_tx.png)
+  
+  ![omni_tx_Example](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/omni_tx.png)
    
   8. Используя `secret`, который Алиса получила из redeem транзакции Боба, она создает и отправляет в сеть следующую транзакцию:
-  ![redeem_txB](https://github.com/swaponline/tether.research/blob/master/images//exampleMainnet/redeem_txB.png)
+  
+  ![redeem_txB](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/redeem_txB.png)
+  
   Тем самым собирая себе биткоины.
 
    Баланс TetherUS токенов Алисы после проведения этих транзакции: <br />
-   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/BalanceA2.png)
+  
+  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/BalanceA2.png)
     
    Баланс TetherUS токенов Боба после проведения этих транзакции: <br />
-   ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/images/exampleMainnet/BalanceB2.png)   
+  
+  ![Alice's_Balance](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/BalanceB2.png)   
   
    Как мы видим Боб получил свой TetherUS, а Алиса свои биткоины!
   
