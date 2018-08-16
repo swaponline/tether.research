@@ -144,7 +144,7 @@
   
   ![funding_tx_Example](https://github.com/swaponline/tether.research/blob/master/exampleMainnet/funding_txB.png) <br />
   
-  4. Боб передает секретное значение Алисе.
+  4. Боб передает `secretHash` значение Алисе.
   
   5. Алиса создала следующую транзакию и отправила ее в блокчейн (funding_tx): <br />
   
