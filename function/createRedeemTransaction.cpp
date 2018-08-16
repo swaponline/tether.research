@@ -5,6 +5,8 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
 {
 
     payment_address Alice_address=Alice_private.to_payment_address();
+    data_chunk swap_secret_hash=ripemd160_hash_chunk(swap_secret);
+
 
     transaction redeem_tx;
 
@@ -27,6 +29,8 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
     std::cout<<"\n write index unspended output of your UTXO, its output will be input:\n";
     std::cin>>PrevTxIndex;
 
+
+    //сдача пользователю, то есть открывающая транзакция (opening_tx) имеет 2 выхода - первый, на счет с мультподписью размер отправляеных на него биткоинов равен ширине канала, второй - сдача пользователю, остаток средств которые он хочет вернуть на свой адрес, он наберет их сам, учитывая какую сумму он хочет потратить на fees
     std::string OddMoney_btc;
     uint64_t OddMoney_satoshi;
     std::cout<<"\n write odd money (in BTC), for creating p2pkh output on your address. Dont forgot about transaction's fees:\n";
@@ -41,7 +45,7 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
     input input1;
     output_point FundingTxOutput(Funding_tx.hash(), 0u);
     input1.set_previous_output(FundingTxOutput);
-    input1.set_sequence(0xffffffff);
+    input1.set_sequence(0x00000000);
 
     redeem_tx.inputs().push_back(input0); //добавим вход без подписи
     redeem_tx.inputs().push_back(input1); //добавим вход без подписи
@@ -50,15 +54,10 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
     //выходы
 
 
-    //выход с op_return скриптом (он же payload)
+    //выход с op_return скриптом
     operation::list OmniScript;
     OmniScript.push_back(operation(opcode::return_));
     data_chunk omni_payload;
-    //payload - это вектор байт, который просто добавляется выходом с кодом OP_RETURN,
-    //который невозможно потратить и который остается в блокчейне навсегда,
-    //а парсить этот payload уже нужно по протоколам Omni Layer,
-    //чем и занимается их программа OmniCore - просматривает весь блокчейн биткоина ищет все
-    //payloads и считая, какие проводятся операции выдает баланс для любого адреса
     omni_payload.push_back(0x6f); //o
     omni_payload.push_back(0x6d); //m
     omni_payload.push_back(0x6e); //n
@@ -72,11 +71,11 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
     omni_payload.push_back(0x00); //0
     omni_payload.push_back(0x00); //0
 
-    //token identifier =1 (mastercoin)
+    //token identifier =31 (TetherUS)
     omni_payload.push_back(0x00); //0
     omni_payload.push_back(0x00); //0
     omni_payload.push_back(0x00); //0
-    omni_payload.push_back(0x01); //1
+    omni_payload.push_back(0x1f); //1
 
     //amount
     for(int i=7; i>=0; i--)
@@ -101,6 +100,28 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
     redeem_tx.outputs().push_back(Output2);
 
 
+
+    operation::list SwapScript;
+
+    SwapScript.push_back( operation(opcode::ripemd160) );
+    SwapScript.push_back( operation(swap_secret_hash) );
+    SwapScript.push_back( operation(opcode::equal) );
+
+    SwapScript.push_back( operation(opcode::if_) );
+
+    SwapScript.push_back( operation(to_chunk(Bob_pubkey.point())) );
+
+    SwapScript.push_back( operation(opcode::else_) );
+    SwapScript.push_back( operation(uint32_to_data_chunk_inverse(locktime)) );
+    SwapScript.push_back( operation(opcode::checklocktimeverify) );
+    SwapScript.push_back( operation(opcode::drop) );
+    SwapScript.push_back( operation(to_chunk(Alice_private.to_public().point() )) );
+
+    SwapScript.push_back( operation(opcode::endif) );
+    SwapScript.push_back( operation(opcode::checksig) );
+
+    script redeem_script(SwapScript);
+
     //подпишемся!
     endorsement Sig0;
    // считаем скрипт выхода соответствующнго входу0 равен p2pkhScript
@@ -112,20 +133,22 @@ transaction createAtomicSwapTetherRedeemTransaction(const ec_private& Alice_priv
     script InputScript0(sig_script0);
     redeem_tx.inputs()[0].set_script(InputScript0);
 
+    std::cout<<"REDEEM TRANSACTION WITHOUT BOB'S SIGN:\n"<<encode_base16( redeem_tx.to_data() )<<std::endl;
 
     endorsement Sig1;
    // считаем скрипт выхода соответствующнго входу0 равен p2pkhScript
-    script::create_endorsement(Sig1, Bob_private.secret(), Funding_tx.outputs()[0].script() , redeem_tx, 1u, sighash_algorithm::all);
+    script::create_endorsement(Sig1, Bob_private.secret(), redeem_script , redeem_tx, 1u, sighash_algorithm::all);
 
     operation::list  sig_script1;
     sig_script1.push_back(operation(Sig1));
-    sig_script1.push_back(operation(to_chunk(Bob_private.to_public().point() )));
     sig_script1.push_back(operation( swap_secret ));
+    sig_script1.push_back( operation(to_chunk(redeem_script.to_data(false)) ));
+
+
 
     script InputScript1(sig_script1);
     redeem_tx.inputs()[1].set_script(InputScript1);
 
-    redeem_tx.inputs().pop_back();
 
     return redeem_tx;
 
